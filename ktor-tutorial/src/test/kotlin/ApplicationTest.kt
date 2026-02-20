@@ -1,6 +1,7 @@
 package com.example
 
 import io.ktor.client.request.*
+import io.ktor.client.statement.*
 import io.ktor.http.*
 import io.ktor.server.testing.*
 import kotlin.test.Test
@@ -11,11 +12,12 @@ class ApplicationTest {
     @Test
     fun testRoot() = testApplication {
         application {
-            module()
+            configureRouting()  // Make sure it calls the same routing function
         }
-        client.get("/").apply {
-            assertEquals(HttpStatusCode.OK, status)
-        }
+
+        val response = client.get("/")
+        assertEquals(HttpStatusCode.OK, response.status)
+        assertEquals("Welcome to the API!", response.bodyAsText())
     }
 
 }
