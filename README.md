@@ -25,4 +25,4 @@ The website should eventually provide:
 - [ ] Understand how to set up a minimal Ktor backend for a RESTful API  
 - [ ] Learn basic routing and JSON responses in Ktor  
 - [ ] Set up a basic React project and learn how components and state work ([React Official Tutorial](https://react.dev/learn))  
-- [ ] Connect the React frontend to your Ktor REST API via a simple GET request  
+- [ ] Connect the React frontend to Ktor REST API via a simple GET request  
