@@ -26,3 +26,15 @@ The website should eventually provide:
 - [ ] Learn basic routing and JSON responses in Ktor  
 - [ ] Set up a basic React project and learn how components and state work ([React Official Tutorial](https://react.dev/learn))  
 - [ ] Connect the React frontend to Ktor REST API via a simple GET request  
+
+**Report**
+
+Today I worked on my Ktor backend for the Minecraft PvP Guide project. I’m following the official Ktor REST API tutorial ([link](https://ktor.io/docs/server-create-restful-apis.html#content-negotiation)), and I’ve reached the chapter on **Content Negotiation**.  
+
+I started with a project generated on [start.ktor.io](https://start.ktor.io), so all the files like `Application.kt` and the default test file were already there. I didn’t have to create anything from scratch.  
+
+At first, I ran into some Gradle build issues. I got errors like:
+
+```
+Unable to load class 'org.gradle.util.VersionNumber'
+```
