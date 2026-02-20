@@ -1,28 +1,39 @@
 plugins {
-    alias(libs.plugins.kotlin.jvm)
-    alias(libs.plugins.ktor)
-    alias(libs.plugins.kotlin.plugin.serialization)
+    kotlin("jvm") version "1.8.21"                 // Kotlin JVM
+    id("io.ktor.plugin") version "2.3.3"          // Ktor plugin
+    kotlin("plugin.serialization") version "1.8.21" // Kotlin Serialization plugin
 }
 
 group = "com.example"
 version = "0.0.1"
 
 application {
-    mainClass = "io.ktor.server.netty.EngineMain"
+    mainClass.set("io.ktor.server.netty.EngineMain") // Needed for EngineMain
 }
 
 kotlin {
-    jvmToolchain(21)
+    jvmToolchain(17) // JDK 17
+}
+
+repositories {
+    mavenCentral()
 }
 
 dependencies {
-    implementation(libs.ktor.server.core)
-    implementation(libs.ktor.server.host.common)
-    implementation(libs.ktor.server.content.negotiation)
-    implementation(libs.ktor.serialization.kotlinx.json)
-    implementation(libs.ktor.server.netty)
-    implementation(libs.logback.classic)
-    implementation(libs.ktor.server.config.yaml)
-    testImplementation(libs.ktor.server.test.host)
-    testImplementation(libs.kotlin.test.junit)
+    // Ktor
+    implementation("io.ktor:ktor-server-core:2.3.3")
+    implementation("io.ktor:ktor-server-netty:2.3.3")
+    implementation("io.ktor:ktor-server-content-negotiation:2.3.3")
+    implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
+    implementation("ch.qos.logback:logback-classic:1.4.11")
+
+    // Testing
+    testImplementation("io.ktor:ktor-server-test-host:2.3.3")
+    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.8.21")
+}
+
+tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_17)
+    }
 }
