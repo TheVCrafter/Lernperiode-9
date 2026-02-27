@@ -29,7 +29,15 @@ dependencies {
 
     // Testing
     testImplementation("io.ktor:ktor-server-test-host:2.3.3")
-    testImplementation("org.jetbrains.kotlin:kotlin-test-junit:1.8.21")
+    testImplementation("io.ktor:ktor-server-test-host:2.3.3")
+    testImplementation(kotlin("test"))
+
+// Client + JSON for tests (MUST match 2.3.3)
+    testImplementation("io.ktor:ktor-client-core:2.3.3")
+    testImplementation("io.ktor:ktor-client-content-negotiation:2.3.3")
+    testImplementation("io.ktor:ktor-serialization-kotlinx-json:2.3.3")
+
+    testImplementation("com.jayway.jsonpath:json-path:2.9.0")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile>().configureEach {

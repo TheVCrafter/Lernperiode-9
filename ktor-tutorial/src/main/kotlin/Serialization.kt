@@ -6,6 +6,6 @@ import io.ktor.serialization.kotlinx.json.*
 
 fun Application.configureSerialization() {
     install(ContentNegotiation) {
-        json() // Enables kotlinx.serialization for JSON
+        json()
     }
 }
