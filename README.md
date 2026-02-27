@@ -49,9 +49,22 @@ Unfortunately, due to the time spent troubleshooting the build configuration, I 
 
 **Goals**
 
-- [ ] Finish the official Ktor REST API tutorial completely  
-- [ ] Understand routing and JSON responses in Ktor and test endpoints  
-- [ ] Plan the backend structure for the Minecraft PvP Guide project (data models, routes, and endpoints)  
+- [X] Finish the official Ktor REST API tutorial completely  
+- [X] Understand routing and JSON responses in Ktor and test endpoints  
+- [X] Plan the backend structure for the Minecraft PvP Guide project (data models, routes, and endpoints)  
 - [ ] Start coding the planned backend structure by creating the first endpoints and data classes  
 
 **Report**
+Today I finished the official Ktor REST API tutorial. The code was mostly provided, so my main focus was understanding how everything works together rather than writing it from scratch.
+
+I reviewed the routing setup, the repository pattern, and the implementation of GET, POST, and DELETE endpoints. A key part was understanding how the Content Negotiation plugin handles JSON serialization and how request bodies are deserialized using `call.receive<T>()`.
+
+While working through the testing section, I ran into several issues, especially with missing dependencies and configuration problems. At one point, the ContentNegotiation plugin was installed twice, which caused a `DuplicatePluginException`. Debugging these errors helped me better understand how Ktor loads modules and plugins internally.
+
+I also looked at automated tests using `testApplication` and JsonPath to understand how API responses and JSON structure can be verified.
+
+Besides the tutorial, I continued planning the backend structure for my Minecraft PvP Guide project. The UML diagram is not fully finished yet and still lacks relations, but I was already able to define some of the main entities such as `Kit`, `Server`, and `Mechanic`.
+
+---
+
+## 06.03.2026 - 
