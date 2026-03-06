@@ -67,4 +67,23 @@ Besides the tutorial, I continued planning the backend structure for my Minecraf
 
 ---
 
-## 06.03.2026 - 
+## 06.03.2026 - Finalizing Backend Planning
+
+**Goals**
+
+- [X] Finish the UML class diagram for the backend  
+- [X] Define associations, compositions, and multiplicities between the main entities  
+- [X] Finalize the backend architecture planning document  
+- [ ] Start implementing the first backend endpoints based on the planned API  
+
+**Report**
+
+Today I focused on finishing the planning phase for the backend of the PvP Guide.
+
+I completed the UML class diagram and defined the relationships between the main entities such as `Server`, `Kit`, `KitVariant`, `Mechanic`, `Technique`, and `Drill`. While working on the diagram, I also added the correct UML relation types like aggregation and composition as well as multiplicities where they make sense. This helped clarify how the different parts of the system depend on each other.
+
+In addition to the diagram, I finalized the backend planning document. It now contains the overall API structure, planned endpoints, and the responsibilities of each entity in the system. The backend will mainly act as a REST API that provides structured PvP guide content to the frontend.
+
+The API design now includes endpoints for servers, kits, kit variants, mechanics, techniques, drills, matchups, tags, and search functionality. I also defined several constraints, such as unique slugs and consistency rules for version groups.
+
+With the architecture mostly defined, the next step will be to start implementing the actual backend structure in Ktor based on the planned data model and API routes.
