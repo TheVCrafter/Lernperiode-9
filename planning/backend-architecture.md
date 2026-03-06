@@ -1,51 +1,58 @@
 # PvP Guide Backend – Planning
 
-## Where I’m at
-I’m still building the UML diagram. I don’t have all classes/enums in yet and I also haven’t drawn all relations (multiplicities) yet.
-That’s fine for now — but I want the API plan to already be “finishable”, so I know what the backend must provide.
+## Current state
+The backend structure is now mostly defined.  
+The UML class diagram has been drafted with the main classes, enums, multiplicities, and the most important relations.
+
+Some parts may still be adjusted later, but the overall domain model and API structure are clear enough to start implementation.
 
 ---
 
 ## What the backend should provide
-The backend should basically be a content API for my PvP guide.
+The backend should work as a content API for the PvP Guide.
 
-It needs to support:
-- Minecraft PvP content separated by combat version (1.8+ vs 1.9+)
-- Kits + server-specific kit variants (because servers differ)
-- Rules + loadouts for each kit variant
-- Learning content (mechanics, techniques, drills)
-- Matchups (strategy between two kit variants)
-- Tags + search/filtering (so the frontend can find stuff fast)
-- Media + references (videos, docs, links)
+It should support:
+- Minecraft PvP content separated by combat version (`V1_8_PLUS` and `V1_9_PLUS`)
+- Kits and server-specific kit variants
+- Rules and loadouts for each kit variant
+- Learning content such as mechanics, techniques, and drills
+- Matchups between kit variants
+- Tags for filtering and categorization
+- Media and reference links for extra content
 
-Ranking / accounts are NOT part of the first version.
+Ranking, accounts, and match tracking are not part of the first version.
 
 ---
 
 ## Data structure (high level)
-- `Kit` = abstract kit type (NetPot / Crystal / Sword / etc.)
-- `KitVariant` = server-specific version of a kit (rules + loadout)
-- `KitRuleFlags` = what is allowed (shields, crystals, build, etc.)
-- `KitLoadoutItem` = actual items in the kit
 
-Learning:
-- `Mechanic` = theory
-- `Technique` = how to execute skills
-- `Drill` = training routine
-- `Matchup` = kitVariant vs kitVariant strategy
+### Core PvP structure
+- `Server` = a server that provides specific kit variants
+- `Kit` = an abstract kit type (for example NetPot, Crystal, Sword)
+- `KitVariant` = a server-specific implementation of a kit
+- `KitRuleFlags` = rules for a specific kit variant
+- `KitLoadoutItem` = the items that belong to a specific kit variant
+
+### Learning content
+- `Mechanic` = theory or explanation of a PvP concept
+- `Technique` = how to apply a specific skill in practice
+- `Drill` = a training routine for improving a skill
+- `Matchup` = strategy between two kit variants
+- `Tag` = used for filtering and categorizing content
 
 ---
 
-## API Plan (REST)
+## API plan (REST)
 
 ### Base
 - Base path: `/api`
-- JSON everywhere
-- Filtering via query params (`versionGroup`, `server`, `tag`, `difficulty`, etc.)
+- JSON responses
+- Filtering via query parameters such as `versionGroup`, `server`, `tag`, and `difficulty`
 
 ### Version filtering
-Most list endpoints should accept:
-- `versionGroup=V1_8_PLUS` or `versionGroup=V1_9_PLUS`
+Most list endpoints should support:
+- `versionGroup=V1_8_PLUS`
+- `versionGroup=V1_9_PLUS`
 
 ---
 
@@ -53,31 +60,31 @@ Most list endpoints should accept:
 
 ### Health
 - `GET /api/health`
-  - just returns that the backend is running
+  - returns whether the backend is running
 
 ---
 
 ### Servers
 - `GET /api/servers`
-  - filters: `active`, `region`
+  - optional filters: `active`, `region`
 - `GET /api/servers/{slug}`
 - `GET /api/servers/{slug}/kit-variants`
   - optional filters: `versionGroup`, `kitSlug`
 
 ---
 
-### Kits (base kits)
+### Kits
 - `GET /api/kits`
-  - filters: `versionGroup`
+  - optional filters: `versionGroup`
 - `GET /api/kits/{slug}`
 - `GET /api/kits/{slug}/variants`
-  - filters: `server`, `versionGroup`
+  - optional filters: `server`, `versionGroup`
 
 ---
 
-### Kit Variants (server-specific kits)
+### Kit Variants
 - `GET /api/kit-variants`
-  - filters: `server`, `kit`, `versionGroup`
+  - optional filters: `server`, `kit`, `versionGroup`
 - `GET /api/kit-variants/{id}`
 - `GET /api/kit-variants/{id}/rules`
 - `GET /api/kit-variants/{id}/loadout`
@@ -88,7 +95,7 @@ Most list endpoints should accept:
 
 ### Mechanics
 - `GET /api/mechanics`
-  - filters: `versionGroup`, `tag`
+  - optional filters: `versionGroup`, `tag`
 - `GET /api/mechanics/{slug}`
 - `GET /api/mechanics/{slug}/techniques`
 
@@ -96,32 +103,32 @@ Most list endpoints should accept:
 
 ### Techniques
 - `GET /api/techniques`
-  - filters: `versionGroup`, `difficulty`, `tag`
+  - optional filters: `versionGroup`, `difficulty`, `tag`
 - `GET /api/techniques/{slug}`
 
 ---
 
 ### Drills
 - `GET /api/drills`
-  - filters: `versionGroup`, `difficulty`, `tag`
+  - optional filters: `versionGroup`, `difficulty`, `tag`
 - `GET /api/drills/{slug}`
 
 ---
 
 ### Matchups
 - `GET /api/matchups`
-  - filters: `versionGroup`, `kitVariantA`, `kitVariantB`
+  - optional filters: `versionGroup`, `kitVariantA`, `kitVariantB`
 - `GET /api/matchups/{id}`
 - `GET /api/matchups/byVariants?A={id}&B={id}`
-  - this should work regardless of order (A/B swapped)
+  - should return the matchup regardless of argument order
 
 ---
 
 ### Tags
 - `GET /api/tags`
-  - filters: `type`
+  - optional filters: `type`
 - `GET /api/tags/{id}/content`
-  - returns mixed results (mechanics/techniques/drills/kits/variants)
+  - returns related mechanics, techniques, drills, kits, or kit variants
   - optional filters: `versionGroup`
 
 ---
@@ -129,22 +136,26 @@ Most list endpoints should accept:
 ### Search
 - `GET /api/search?query=...`
   - optional filters: `versionGroup`, `tag`, `type`
-  - returns mixed results (guides, mechanics, techniques, drills, kits, variants)
+  - returns mixed results depending on the search query
 
 ---
 
-### Media + References
+### Media and References
 - `GET /api/media?targetType=...&targetId=...`
 - `GET /api/references?targetType=...&targetId=...`
 
-(Where `targetType` is something like `TECHNIQUE`, `MECHANIC`, `KIT_VARIANT`, etc.)
+`targetType` can be something like:
+- `TECHNIQUE`
+- `MECHANIC`
+- `KIT_VARIANT`
 
 ---
 
-## Notes / Rules I want to enforce
-- Slugs should be unique where they exist (kits, servers, mechanics, techniques, drills).
-- `KitVariant` should be unique per `(kitId + serverId)`.
-- `versionGroup` should match when linking content (no mixing 1.8+ techniques into 1.9+ kits).
+## Rules / constraints
+- Slugs should be unique where they exist (`kits`, `servers`, `mechanics`, `techniques`, `drills`)
+- `KitVariant` should be unique per `(kitId + serverId)`
+- `versionGroup` should stay consistent across linked content
+- A `Matchup` should always reference exactly two `KitVariant` entries
 
 ---
 
@@ -157,4 +168,4 @@ Most list endpoints should accept:
 
 ## Files
 - UML diagram: `pvp-guide-backend-class-diagram.drawio`
-- this planning file: `backend-architecture.md`
+- planning file: `backend-architecture.md`
