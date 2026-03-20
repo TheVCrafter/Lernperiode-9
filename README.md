@@ -87,3 +87,28 @@ In addition to the diagram, I finalized the backend planning document. It now co
 The API design now includes endpoints for servers, kits, kit variants, mechanics, techniques, drills, matchups, tags, and search functionality. I also defined several constraints, such as unique slugs and consistency rules for version groups.
 
 With the architecture mostly defined, the next step will be to start implementing the actual backend structure in Ktor based on the planned data model and API routes.
+
+---
+
+## 20.03.2026 - Starting the Backend Implementation
+
+**Goals**
+
+- [X] Start implementing the planned backend structure in Ktor  
+- [X] Organize the backend into a cleaner project structure with plugins, configuration, and feature folders  
+- [X] Implement the first main backend features such as servers, kits, kit variants, mechanics, techniques, drills, and tags  
+- [X] Improve the backend setup with seed data, error handling, and updated Swagger documentation  
+
+**Report**
+
+Today I moved from planning the backend to actually implementing it in Ktor.
+
+At first, I focused on the project structure. I separated the Ktor setup into plugin files such as `HTTP.kt`, `Routing.kt`, `Serialization.kt`, `Swagger.kt`, and `StatusPages.kt`, while the actual backend logic was organized into feature folders. I also added an `AppConfig` class together with an `application.conf` file so that the project configuration is cleaner and easier to manage.
+
+After that, I started implementing the actual backend features. I worked on the core parts of the API such as `Server`, `Kit`, and `KitVariant`, and then also added the first learning-related features like `Mechanic`, `Technique`, `Drill`, and `Tag`. For these, I created the corresponding data classes, repositories, routes, and seed data.
+
+I also improved the content of the seed data. Instead of using only placeholder values, I expanded the server and kit data and tried to make it fit better with real Minecraft PvP categories. This makes the backend more useful already, even before the frontend is connected to it.
+
+Finally, I improved the technical setup of the project. I added centralized error handling with `StatusPages` and updated the Swagger/OpenAPI documentation so that the implemented endpoints are documented properly.
+
+Overall, today was an important step because the project is no longer only planned on paper. The backend now has a real structure and already contains the first implemented features of the PvP Guide.

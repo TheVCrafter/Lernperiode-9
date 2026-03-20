@@ -1,0 +1,892 @@
+openapi: 3.0.4
+
+info:
+  title: PvP Guide Backend API
+  version: 0.2.0
+  description: |
+    REST API for the Minecraft PvP Guide backend.
+
+    Current documented areas:
+    - health
+    - servers
+    - kits
+    - kit variants
+    - mechanics
+    - techniques
+    - drills
+
+servers:
+    - url: /
+      description: Same origin
+
+tags:
+  - name: Health
+  - name: Servers
+  - name: Kits
+  - name: Kit Variants
+  - name: Mechanics
+  - name: Techniques
+  - name: Drills
+
+paths:
+  /api/health:
+    get:
+      tags: [Health]
+      summary: Check backend status
+      operationId: getHealth
+      responses:
+        "200":
+          description: Backend is healthy
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/HealthResponse"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/servers:
+    get:
+      tags: [Servers]
+      summary: Get all servers
+      operationId: getServers
+      parameters:
+        - name: active
+          in: query
+          required: false
+          schema:
+            type: boolean
+        - name: region
+          in: query
+          required: false
+          schema:
+            type: string
+            example: GLOBAL
+      responses:
+        "200":
+          description: List of servers
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Server"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/servers/{slug}:
+    get:
+      tags: [Servers]
+      summary: Get a server by slug
+      operationId: getServerBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: minemen-club
+      responses:
+        "200":
+          description: Server found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Server"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/servers/{slug}/kit-variants:
+    get:
+      tags: [Servers, Kit Variants]
+      summary: Get kit variants for a server
+      operationId: getServerKitVariants
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: minemen-club
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+        - name: kitSlug
+          in: query
+          required: false
+          schema:
+            type: string
+            example: classic
+      responses:
+        "200":
+          description: List of kit variants for a server
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KitVariant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kits:
+    get:
+      tags: [Kits]
+      summary: Get all kits
+      operationId: getKits
+      parameters:
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+      responses:
+        "200":
+          description: List of kits
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Kit"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kits/{slug}:
+    get:
+      tags: [Kits]
+      summary: Get a kit by slug
+      operationId: getKitBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: crystal
+      responses:
+        "200":
+          description: Kit found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Kit"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kits/{slug}/variants:
+    get:
+      tags: [Kits, Kit Variants]
+      summary: Get variants for a kit
+      operationId: getKitVariantsByKit
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: crystal
+        - name: server
+          in: query
+          required: false
+          schema:
+            type: string
+            example: pvp-legacy
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+      responses:
+        "200":
+          description: List of kit variants for a kit
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KitVariant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kit-variants:
+    get:
+      tags: [Kit Variants]
+      summary: Get all kit variants
+      operationId: getKitVariants
+      parameters:
+        - name: server
+          in: query
+          required: false
+          schema:
+            type: string
+            example: pvp-legacy
+        - name: kit
+          in: query
+          required: false
+          schema:
+            type: string
+            example: crystal
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+      responses:
+        "200":
+          description: List of kit variants
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KitVariant"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kit-variants/{id}:
+    get:
+      tags: [Kit Variants]
+      summary: Get a kit variant by id
+      operationId: getKitVariantById
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 202
+      responses:
+        "200":
+          description: Kit variant found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KitVariant"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kit-variants/{id}/rules:
+    get:
+      tags: [Kit Variants]
+      summary: Get kit variant rules
+      operationId: getKitVariantRules
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 202
+      responses:
+        "200":
+          description: Rules for the kit variant
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/KitRuleFlags"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/kit-variants/{id}/loadout:
+    get:
+      tags: [Kit Variants]
+      summary: Get kit variant loadout
+      operationId: getKitVariantLoadout
+      parameters:
+        - name: id
+          in: path
+          required: true
+          schema:
+            type: integer
+            format: int64
+            example: 202
+      responses:
+        "200":
+          description: Loadout items for the kit variant
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/KitLoadoutItem"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/mechanics:
+    get:
+      tags: [Mechanics]
+      summary: Get all mechanics
+      operationId: getMechanics
+      parameters:
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+            example: movement
+      responses:
+        "200":
+          description: List of mechanics
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Mechanic"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/mechanics/{slug}:
+    get:
+      tags: [Mechanics]
+      summary: Get a mechanic by slug
+      operationId: getMechanicBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: spacing
+      responses:
+        "200":
+          description: Mechanic found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Mechanic"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/mechanics/{slug}/techniques:
+    get:
+      tags: [Mechanics, Techniques]
+      summary: Get techniques for a mechanic
+      operationId: getMechanicTechniques
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: spacing
+      responses:
+        "200":
+          description: Techniques related to the mechanic
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Technique"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/techniques:
+    get:
+      tags: [Techniques]
+      summary: Get all techniques
+      operationId: getTechniques
+      parameters:
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+        - name: difficulty
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Difficulty"
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+            example: healing
+      responses:
+        "200":
+          description: List of techniques
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Technique"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/techniques/{slug}:
+    get:
+      tags: [Techniques]
+      summary: Get a technique by slug
+      operationId: getTechniqueBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: w-tap
+      responses:
+        "200":
+          description: Technique found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Technique"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/drills:
+    get:
+      tags: [Drills]
+      summary: Get all drills
+      operationId: getDrills
+      parameters:
+        - name: versionGroup
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/VersionGroup"
+        - name: difficulty
+          in: query
+          required: false
+          schema:
+            $ref: "#/components/schemas/Difficulty"
+        - name: tag
+          in: query
+          required: false
+          schema:
+            type: string
+            example: training
+      responses:
+        "200":
+          description: List of drills
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Drill"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+  /api/drills/{slug}:
+    get:
+      tags: [Drills]
+      summary: Get a drill by slug
+      operationId: getDrillBySlug
+      parameters:
+        - name: slug
+          in: path
+          required: true
+          schema:
+            type: string
+            example: w-tap-hit-confirm
+      responses:
+        "200":
+          description: Drill found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Drill"
+        "400":
+          $ref: "#/components/responses/BadRequest"
+        "404":
+          $ref: "#/components/responses/NotFound"
+        "500":
+          $ref: "#/components/responses/InternalServerError"
+
+components:
+  responses:
+    BadRequest:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    NotFound:
+      description: Resource not found
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+    InternalServerError:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            $ref: "#/components/schemas/ApiError"
+
+  schemas:
+    HealthResponse:
+      type: object
+      required: [status]
+      properties:
+        status:
+          type: string
+          example: ok
+
+    ApiError:
+      type: object
+      required: [message]
+      properties:
+        message:
+          type: string
+          example: Resource not found
+
+    VersionGroup:
+      type: string
+      enum:
+        - V1_8_PLUS
+        - V1_9_PLUS
+
+    Difficulty:
+      type: string
+      enum:
+        - BEGINNER
+        - INTERMEDIATE
+        - ADVANCED
+
+    Server:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - region
+        - active
+        - supportedVersionGroups
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        slug:
+          type: string
+          example: minemen-club
+        name:
+          type: string
+          example: Minemen Club
+        region:
+          type: string
+          example: GLOBAL
+        active:
+          type: boolean
+          example: true
+        supportedVersionGroups:
+          type: array
+          items:
+            $ref: "#/components/schemas/VersionGroup"
+
+    Kit:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - description
+        - versionGroup
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 9
+        slug:
+          type: string
+          example: crystal
+        name:
+          type: string
+          example: Crystal
+        description:
+          type: string
+          example: End crystal PvP focused on burst damage and placement.
+        versionGroup:
+          $ref: "#/components/schemas/VersionGroup"
+
+    KitRuleFlags:
+      type: object
+      required:
+        - healingAllowed
+        - crystalsAllowed
+        - shieldsAllowed
+        - lavaAllowed
+        - bowsAllowed
+      properties:
+        healingAllowed:
+          type: boolean
+          example: true
+        crystalsAllowed:
+          type: boolean
+          example: true
+        shieldsAllowed:
+          type: boolean
+          example: true
+        lavaAllowed:
+          type: boolean
+          example: true
+        bowsAllowed:
+          type: boolean
+          example: false
+
+    KitVariant:
+      type: object
+      required:
+        - id
+        - kitId
+        - serverId
+        - kitSlug
+        - serverSlug
+        - displayName
+        - versionGroup
+        - ranked
+        - rules
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 202
+        kitId:
+          type: integer
+          format: int64
+          example: 9
+        serverId:
+          type: integer
+          format: int64
+          example: 2
+        kitSlug:
+          type: string
+          example: crystal
+        serverSlug:
+          type: string
+          example: pvp-legacy
+        displayName:
+          type: string
+          example: Legacy Crystal
+        versionGroup:
+          $ref: "#/components/schemas/VersionGroup"
+        ranked:
+          type: boolean
+          example: true
+        rules:
+          $ref: "#/components/schemas/KitRuleFlags"
+
+    KitLoadoutItem:
+      type: object
+      required:
+        - slot
+        - itemKey
+        - amount
+      properties:
+        slot:
+          type: integer
+          example: 0
+        itemKey:
+          type: string
+          example: diamond_sword
+        amount:
+          type: integer
+          example: 1
+        enchantments:
+          type: array
+          items:
+            type: string
+          example:
+            - sharpness_5
+
+    Mechanic:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - summary
+        - details
+        - versionGroup
+        - tagSlugs
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        slug:
+          type: string
+          example: spacing
+        name:
+          type: string
+          example: Spacing
+        summary:
+          type: string
+          example: Manage distance so you can threaten while staying hard to punish.
+        details:
+          type: string
+          example: Spacing is the base layer of almost every duel.
+        versionGroup:
+          $ref: "#/components/schemas/VersionGroup"
+        tagSlugs:
+          type: array
+          items:
+            type: string
+          example:
+            - movement
+            - neutral
+            - positioning
+
+    Technique:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - summary
+        - details
+        - difficulty
+        - versionGroup
+        - mechanicIds
+        - relatedKitVariantIds
+        - tagSlugs
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        slug:
+          type: string
+          example: w-tap
+        name:
+          type: string
+          example: W-Tap
+        summary:
+          type: string
+          example: Reset sprint between hits to improve knockback control.
+        details:
+          type: string
+          example: W-tapping is one of the most important 1.8 habits.
+        difficulty:
+          $ref: "#/components/schemas/Difficulty"
+        versionGroup:
+          $ref: "#/components/schemas/VersionGroup"
+        mechanicIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [1]
+        relatedKitVariantIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [101, 105]
+        tagSlugs:
+          type: array
+          items:
+            type: string
+          example:
+            - movement
+            - kb-control
+
+    Drill:
+      type: object
+      required:
+        - id
+        - slug
+        - name
+        - summary
+        - instructions
+        - difficulty
+        - versionGroup
+        - techniqueIds
+        - relatedKitVariantIds
+        - tagSlugs
+      properties:
+        id:
+          type: integer
+          format: int64
+          example: 1
+        slug:
+          type: string
+          example: w-tap-hit-confirm
+        name:
+          type: string
+          example: W-Tap Hit Confirm
+        summary:
+          type: string
+          example: Practice clean sprint resets after confirmed hits.
+        instructions:
+          type: string
+          example: Play short first-hit exchanges and focus only on clean sprint reset timing.
+        difficulty:
+          $ref: "#/components/schemas/Difficulty"
+        versionGroup:
+          $ref: "#/components/schemas/VersionGroup"
+        techniqueIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [1]
+        relatedKitVariantIds:
+          type: array
+          items:
+            type: integer
+            format: int64
+          example: [101, 105]
+        tagSlugs:
+          type: array
+          items:
+            type: string
+          example:
+            - movement
+            - kb-control
+            - training
